@@ -1,3 +1,4 @@
+$(".phone_mask").mask("+7(999)999-99-99"); 
 $(document).ready(function () {
     var cartItems = [];
     var total = 0;
@@ -70,53 +71,51 @@ $(document).ready(function () {
         fillUserData(); // Возможно, вам нужно будет вызвать fillUserData() здесь, в зависимости от логики вашего приложения
     });
 
-    // Обработчик кнопок "Заказать" и "Оформить"
-    let buy = document.getElementById("buy");
-    let order = document.getElementById("order");
+    let tg = window.Telegram.WebApp;
+    var buy = $("#buy");
+    var order = $("#order");
 
-    buy.addEventListener("click", () => {
-        document.getElementById("main").style.display = "none";
-        document.getElementById("desserts").style.display = "block";
-        document.getElementById("form").style.display = "none";
-        document.getElementById("cart").style.display = "block";
+    tg.expand();
+
+    buy.click(function () {
+        $("#main").hide();
+        $("#desserts").show();
+        $("#form").hide();
+        $("#cart").show();
     });
 
-    order.addEventListener("click", () => {
-        document.getElementById("desserts").style.display = "none";
-        document.getElementById("form").style.display = "block";
-        fillUserData();
-    });
+    order.click(function () {
+    $("#error").text('');
+    let name = $("#user_name").val();
+    let email = $("#user_email").val();
+    let phone = $("#user_phone").val();
+    let koment = $("#user_koment").val();
+    let items = $("#cart-items").text();
+    let total = $("#total").text();
 
-    order.addEventListener("click", () => {
-        document.getElementById("error").innerText = '';
-        let name = document.getElementById("user_name").value;
-        let email = document.getElementById("user_email").value;
-        let phone = document.getElementById("user_phone").value;
-        let koment = document.getElementById("user_koment").value;
+    if (name.length < 5) {
+        $("#error").text("Ошибка в имени");
+        return;
+    }
+    if (email.length < 5) {
+        $("#error").text("Ошибка в email");
+        return;
+    }
+    if (phone.length < 5) {
+        $("#error").text("Ошибка в номере телефона");
+        return;
+    }
 
-        if (name.length < 5) {
-            document.getElementById("error").innerText = "Ошибка в имени";
-            return;
-        }
-        if (email.length < 5) {
-            document.getElementById("error").innerText = "Ошибка в email";
-            return;
-        }
-        if (phone.length < 5) {
-            document.getElementById("error").innerText = "Ошибка в номере телефона";
-            return;
-        }
+    let data = {
+        name: name,
+        email: email,
+        phone: phone,
+        koment: koment,
+        items: items,
+        total: total
+    }
 
-        let data = {
-            name: name,
-            email: email,
-            phone: phone,
-            koment: koment,
-            items: cartItems,
-            total: total
-        }
-
-        tg.sendData(JSON.stringify(data));
-        tg.close();
-    });
+    tg.sendData(JSON.stringify(data));
+    tg.close();
+});
 });
